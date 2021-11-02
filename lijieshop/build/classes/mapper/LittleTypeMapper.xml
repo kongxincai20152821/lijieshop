@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LittleType">
+  <resultMap type="SuperType" id="superType">
+    <id property="stype_id" column="stype_id"/>
+    <result property="stype_name" column="stype_name"/>
+  </resultMap>
+  <resultMap type="LittleType" id="superLittleType">
+     <id property="ltype_id" column="ltype_id"/>
+     <result property="stype_id" column="stype_id"/>
+     <result property="stype_name" column="stype_name"/>
+     <result property="ltype_name" column="ltype_name"/>
+     <association property="superType" resultMap="superType"></association>
+  </resultMap>
+  <!-- 新增  -->
+  <insert id="add" parameterType="LittleType">
+     insert into little_type(ltype_id,stype_id,ltype_name)
+     values(#{ltype_id},#{stype_id},#{ltype_name})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into little_type(ltype_id,stype_id,ltype_name)
+     values(#{s.ltype_id},#{s.stype_id},#{s.ltype_name})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from little_type where ltype_id=#{ltype_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from little_type where ltype_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="LittleType">
+     update little_type set 
+     ltype_name=#{ltype_name},
+     stype_id=#{stype_id}
+     where ltype_id=#{ltype_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="LittleType">
+     select * from little_type where ltype_id=#{ltype_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultMap="superLittleType">
+        select * from little_type l,super_type s where l.stype_id=s.stype_id and 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and ltype_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and ltype_name like '%'||#{qpassword}||'%'
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  little_type where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and ltype_id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and ltype_name like '%'||#{qpassword}||'%'
+    </if>
+  </select>
+  
+  <!-- 查询全部  -->
+  <select id="queryAll"  resultType="LittleType">
+     select * from little_type 
+  </select>
+</mapper>

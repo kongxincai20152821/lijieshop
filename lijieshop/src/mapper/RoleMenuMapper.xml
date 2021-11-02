@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="RoleMenu">
+  <!-- 通过username,password查询  -->
+  <select id="queryByRoleId" parameterType="int" resultType="RoleMenu">
+     select * from role_menu where rid=#{roleId}
+  </select>
+</mapper>

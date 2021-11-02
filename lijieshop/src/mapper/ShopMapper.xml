@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Shop">
+  <!-- 新增  -->
+  <insert id="add" parameterType="Shop">
+     insert into shop(user_id,goods_id,goodsName,price,number,logo_path)
+     values(#{user_id},#{goods_id},#{goodsName},#{price},#{number},#{logo_path})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into shop(user_id,goods_id,goodsName,price,number,logo_path)
+     values(#{s.user_id},#{s.goods_id},#{s.goodsName},#{s.price},#{s.number},#{s.logo_path})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from shop where shop_id=#{shop_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from shop where shop_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="Shop">
+     update shop set 
+     user_id=#{user_id},
+     goods_id=#{goods_id},
+     goodsName=#{goodsName},
+     price=#{price},
+     number=#{number},
+     logo_path=#{logo_path}
+     where shop_id=#{shop_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="Shop">
+     select * from shop where shop_id=#{shop_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="Shop">
+        select * from shop where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and shop_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and user_id=#{qpassword}
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  shop where 1=1 
+    <if test="qusername!=null and qusername!=''">
+	      and shop_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and user_id=#{qpassword}
+	    </if>
+  </select>
+  
+  <!-- 查询 全部-->
+  <select id="queryAllShop"  resultType="Shop">
+        select * from shop 
+  </select>
+  
+  <!-- 通过user_id查询 所有购物车商品数量和价格 -->
+  <select id="queryAllPrice" parameterType="int" resultType="Shop">
+     select * from shop where user_id=#{user_id}
+  </select>
+  
+  <!--  通过user_id删除 -->
+  <delete id="deleteShop">
+    delete from shop where user_id=#{user_id}
+  </delete>
+</mapper>

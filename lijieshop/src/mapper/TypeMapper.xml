@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Type">
+  <!-- 新增  -->
+  <insert id="add" parameterType="type">
+     insert into type(id,name)
+     values(#{id},#{name})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into type(id,name)
+     values(#{s.id},#{s.name})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from type where id=#{id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from type where id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="type">
+     update type set 
+     name=#{name}
+     where id=#{id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="type">
+     select * from type where id=#{id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="type">
+        select * from type where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and name like '%'||#{qpassword}||'%'
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  type where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and name like '%'||#{qpassword}||'%'
+    </if>
+  </select>
+  
+  <!-- 查询所有  -->
+  <select id="queryAll" parameterType="int" resultType="type">
+     select * from type 
+  </select>
+</mapper>

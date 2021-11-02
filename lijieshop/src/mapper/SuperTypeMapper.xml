@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SuperType">
+  <!-- 新增  -->
+  <insert id="add" parameterType="SuperType">
+     insert into super_type(stype_id,stype_name)
+     values(#{stype_id},#{stype_name})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into super_type(stype_id,stype_name)
+     values(#{s.stype_id},#{s.stype_name})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from super_type where stype_id=#{stype_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from super_type where stype_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="SuperType">
+     update super_type set 
+     stype_name=#{stype_name}
+     where stype_id=#{stype_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="SuperType">
+     select * from super_type where stype_id=#{stype_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="SuperType">
+        select * from super_type where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and stype_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and stype_name like '%'||#{qpassword}||'%'
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  super_type where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and stype_id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and stype_name like '%'||#{qpassword}||'%'
+    </if>
+  </select>
+</mapper>

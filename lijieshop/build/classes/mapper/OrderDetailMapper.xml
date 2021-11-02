@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="OrderDetail">
+  <!-- 新增  -->
+  <insert id="add" parameterType="OrderDetail">
+     insert into order_detail(id,orderID,goods_id,price,number)
+     values(#{id},#{orderID},#{goods_id},#{price},#{number})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+       insert into order_detail(id,orderID,goods_id,price,number)
+     values(#{s.id},#{s.orderID},#{s.goods_id},#{s.price},#{s.number})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from order_detail where id=#{id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from order_detail where id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="OrderDetail">
+     update order_detail set 
+     orderID=#{orderID},
+     goods_id=#{goods_id},
+     price=#{price},
+     number=#{number}
+     where id=#{id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="OrderDetail">
+     select * from order_detail where id=#{id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="OrderDetail">
+        select * from order_detail where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and orderID=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and goods_id=#{qpassword}
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  order_detail where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and orderID=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and goods_id=#{qpassword}
+    </if>
+  </select>
+</mapper>

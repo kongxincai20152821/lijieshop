@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Comment">
+  <resultMap type="User" id="user">
+    <id property="user_id" column="user_id"/>
+    <result property="username" column="username"/>
+    <result property="trueName" column="trueName"/>
+    <result property="IDcardNo" column="IDcardNo"/>
+  </resultMap>
+  <resultMap type="Goods" id="goods">
+     <id property="goods_id" column="goods_id"/>
+     <result property="goodsName" column="goodsName"/>
+  </resultMap>
+  <resultMap type="Comment" id="commentAll">
+      <id property="comment_id" column="comment_id"/>
+      <result property="user_id" column="user_id"/>
+      <result property="username" column="username"/>
+      <result property="trueName" column="trueName"/>
+      <result property="IDcardNo" column="IDcardNo"/>
+      <result property="goods_id" column="goods_id"/>
+      <result property="goodsName" column="goodsName"/>
+      <result property="title" column="title"/>
+      <result property="content" column="content"/>
+      <result property="publish_time" column="publish_time"/>
+      <association property="user" resultMap="user"></association>
+      <association property="goods" resultMap="goods"></association>
+  </resultMap>
+  <!-- 新增  -->
+  <insert id="add" parameterType="Comment">
+     insert into comment(comment_id,user_id,goods_id,title,content,publish_time)
+     values(#{comment_id},#{user_id},#{goods_id},#{title},#{content},#{publish_time})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into comment(comment_id,user_id,goods_id,title,content,publish_time)
+     values(#{s.comment_id},#{s.user_id},#{s.goods_id},#{s.title},#{s.content},#{s.publish_time})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from comment where comment_id=#{comment_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from comment where comment_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="Comment">
+     update comment set 
+     user_id=#{user_id},
+     goods_id=#{goods_id},
+     title=#{title},
+     content=#{content},
+     publish_time=#{publish_time}
+     where comment_id=#{comment_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="Comment">
+     select * from comment where comment_id=#{comment_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultMap="commentAll">
+        select * from comment,user,goods where comment.user_id=user.user_id and comment.goods_id=goods.goods_id and 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and comment_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and user_id=#{qpassword}
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  comment where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and comment_id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and user_id=#{qpassword}
+    </if>
+  </select>
+  
+  <!-- 查询所有评论 -->
+  <select id="queryAllComment" parameterType="map" resultType="Comment">
+        select * from comment where goods_id=#{goods_id}
+        limit #{sp},#{pageSize}
+  </select>
+  
+  <!-- 查询所有评论数量 -->
+  <select id="getCommentTotals" parameterType="int" resultType="int">
+        select count(*) from comment where goods_id=#{goods_id}
+  </select>
+</mapper>

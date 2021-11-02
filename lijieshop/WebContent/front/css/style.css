@@ -1,0 +1,72 @@
+@charset "utf-8";
+
+*{
+	margin: 0;
+	padding: 0;
+	background:pink;
+}
+/*清除原点*/
+ul,li{
+	list-style: none;
+}
+a{
+	text-decoration: none;
+}
+/*轮播*/
+#banner{
+	height: 500px;
+	width: 770px;
+	text-align:center;
+}
+.banner{
+	height: 100%;
+	width: 770px;
+	text-align:center;
+	overflow: hidden;
+	position: relative;
+}
+.banner ul{
+	width: 770px;
+	height: 100%;
+	position: relative;
+	top: 0px;
+	left: 0px;
+} 
+.banner ol{
+	position: absolute;
+	text-align:center;
+	bottom: 10px;
+	width: 190px;
+}
+.banner ol li{
+	float: left;
+	width: 20px;
+	height: 20px;
+	margin: 0 5px;
+	font-size: 15px;
+	text-align: center;
+	border-radius: 50%;
+	cursor: default;
+	background-color: #abc;
+}
+.banner ol li .current{
+	background-color: pink;
+}
+.banner ul li{
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: none;
+}
+.banner ul li img{
+	width: 770px;
+	height: 100%;
+}
+
+/* #banner .btn ul li{
+	position: absolute;
+	border-radius: 10px;
+	width: 50px;
+	height: 50px;
+	background: blue;
+} */

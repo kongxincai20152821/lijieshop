@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="User">
+  <!-- 新增  -->
+  <insert id="add" parameterType="User">
+     insert into user(username,trueName,password,city,address,postCode,IDcardNo,IDcardType,discount_id,balance,phone,email,user_state)
+     values(#{username},#{trueName},#{password},#{city},#{address},#{postCode},#{IDcardNo},#{IDcardType},#{discount_id},#{balance},#{phone},#{email},#{user_state})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into user(username,trueName,password,city,address,postCode,IDcardNo,IDcardType,discount_id,balance,phone,email,user_state)
+     values({#{s.username},#{s.trueName},#{s.password},#{s.city},#{s.address},#{s.postCode},#{s.IDcardNo},#{s.IDcardType},#{s.discount_id},#{s.balance},#{s.phone},#{s.email},#{s.user_state})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from user where user_id=#{user_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from user where user_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="User">
+     update user set 
+     username=#{username},
+     trueName=#{trueName},
+     password=#{password},
+     city=#{city},
+     address=#{address},
+     postCode=#{postCode},
+     IDcardNo=#{IDcardNo},
+     IDcardType=#{IDcardType},
+     discount_id=#{discount_id},
+     balance=#{balance},
+     phone=#{phone},
+     email=#{email},
+     user_state=#{user_state}
+     where user_id=#{user_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="User">
+     select * from user where user_id=#{user_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="User">
+        select * from user where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and user_id=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and trueName like '%'||#{qpassword}||'%'
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  user where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and user_id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and trueName like '%'||#{qpassword}||'%'
+    </if>
+  </select>
+  <!-- 通过username,password查询 用户 -->
+  <select id="queryUser" parameterType="map" resultType="User">
+     select * from user where username=#{username} and password=#{password}
+  </select>
+</mapper>

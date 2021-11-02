@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Collection">
+  <!-- 新增  -->
+  <insert id="add" parameterType="Collection">
+     insert into collection(cid,user_id,goods_id,goodsName,price,newPrice,introduce,logo_path)
+     values(#{cid},#{user_id},#{goods_id},#{goodsName},#{price},#{newPrice},#{introduce},#{logo_path})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into collection(cid,user_id,goods_id,goodsName,price,newPrice,introduce,logo_path)
+     values(#{s.cid},#{s.user_id},#{s.goods_id},#{s.goodsName},#{s.price},#{s.newPrice},#{s.introduce},#{s.logo_path})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from collection where cid=#{cid}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from collection where cid in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="Collection">
+     update collection set 
+     user_id=#{user_id},
+     goods_id=#{goods_id},
+     goodsName=#{goodsName},
+     price =#{price},
+     newPrice =#{newPrice},
+     introduce=#{introduce},
+     logo_path=#{logo_path}
+     where cid=#{cid}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="Collection">
+     select * from collection where cid=#{cid}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultType="Collection">
+        select * from collection where 1=1 
+	    <if test="qusername!=null and qusername!=''">
+	      and cid=#{qusername}
+	    </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	      and user_id=#{qpassword}
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  collection where 1=1 
+    <if test="qusername!=null and qusername!=''">
+      and cid=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+      and user_id=#{qpassword}
+    </if>
+  </select>
+  
+  <!-- 查询全部 -->
+  <select id="queryAll" parameterType="int" resultType="Collection">
+        select * from collection where user_id=#{user_id} 
+  </select>
+</mapper>

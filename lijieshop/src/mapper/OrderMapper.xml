@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Order">
+<resultMap type="User" id="user">
+    <id property="user_id" column="user_id"/>
+    <result property="username" column="username"/>
+    <result property="trueName" column="trueName"/>
+    <result property="IDcardNo" column="IDcardNo"/>
+  </resultMap>
+  <resultMap type="Order" id="userOrder">
+    <id property="order_id" column="order_id"/>
+    <result property="user_id" column="user_id"/>
+    <result property="username" column="username"/>
+    <result property="trueName" column="trueName"/>
+    <result property="IDcardNo" column="IDcardNo"/>
+    <result property="order_username" column="order_username"/>
+    <result property="recevieName" column="recevieName"/>
+    <result property="address" column="address"/>
+    <result property="phone" column="phone"/>
+    <result property="orderDate" column="orderDate"/>
+    <result property="message" column="message"/>
+    <result property="price" column="price"/>
+    <association property="user" resultMap="user"></association>
+  </resultMap>
+  <!-- 新增  -->
+  <insert id="add" parameterType="Order">
+     insert into goods_order(order_id,user_id,order_username,recevieName,address,phone,orderDate,message,price)
+     values(#{order_id},#{user_id},#{order_username},#{recevieName},#{address},#{phone},#{orderDate},#{message},#{price})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into goods_order(order_id,user_id,order_username,recevieName,address,phone,orderDate,message,price)
+     values(#{s.order_id},#{s.user_id},#{s.order_username},#{s.recevieName},#{s.address},#{s.phone},#{s.orderDate},#{s.message},#{s.price})
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from goods_order where order_id=#{order_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from goods_order where order_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="Order">
+     update goods_order set 
+     user_id=#{user_id},
+     order_username=#{order_username},
+     recevieName=#{recevieName},
+     address=#{address},
+     phone=#{phone},
+     orderDate=#{orderDate},
+     message=#{message},
+     price=#{price}
+     where order_id=#{order_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="Order">
+     select * from goods_order where order_id=#{order_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultMap="userOrder">
+        select * from goods_order o,user u where o.user_id=u.user_id 
+        <if test="qusername!=null and qusername!=''">
+            and order_id=#{qusername}
+        </if>
+	    <if test="qpassword!=null and qpassword!=''">
+	       and u.user_id=#{qpassword}
+	    </if>
+        limit #{currentPage},#{pageSize}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  goods_order where 1=1 
+    <if test="qusername!=null and qusername!=''">
+       and order_id=#{qusername}
+    </if>
+    <if test="qpassword!=null and qpassword!=''">
+       and user_id=#{qpassword}
+    </if>
+  </select>
+  
+  <!-- 通过user_id查询 所有订单 -->
+  <select id="queryAll" parameterType="int" resultType="Order">
+     select * from goods_order where user_id=#{user_id}
+  </select>
+</mapper>

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Goods">
+
+  <resultMap type="Goods" id="goodsLittle">
+     <id  property="goods_id" column="goods_id"/>
+     <result property="ltype_id" column="ltype_id"/>
+     <result property="ltype_name" column="ltype_name"/>
+     <result property="goodsName" column="goodsName"/>
+     <result property="introduce" column="introduce"/>
+     <result property="price" column="price"/>
+     <result property="newPrice" column="newPrice"/>
+     <result property="lnTime" column="lnTime"/>
+     <result property="newGoods" column="newGoods"/>
+     <result property="sale" column="sale"/>
+     <result property="goods_total" column="goods_total"/>
+     <result property="state" column="state"/>
+     <result property="type" column="type"/>
+     <result property="name" column="name"/>
+     <result property="logo_path" column="logo_path"/>
+     <association property="littleType" javaType="LittleType">
+        <id property="ltype_id" column="ltype_id"/>
+        <result property="stype_id" column="stype_id"/>
+        <result property="ltype_name" column="ltype_name"/>
+     </association>
+     <association property="goods_type" javaType="Type">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+     </association>
+  </resultMap>
+  <!-- 新增  -->
+  <insert id="add" parameterType="Goods">
+     insert into goods(ltype_id,goodsName,introduce,price,newPrice,lnTime,newGoods,sale,goods_total,state,type,logo_path)
+     values(#{ltype_id},#{goodsName},#{introduce},#{price},#{newPrice},#{lnTime},#{newGoods},#{sale},#{goods_total},#{state},#{type},#{logo_path})
+  </insert>
+  
+ <!--  批量新增 -->
+  <insert id="addMore">
+  begin
+     <foreach collection="list"  item="s" index="index">
+        insert into goods(ltype_id,goodsName,introduce,price,newPrice,lnTime,newGoods,sale,goods_total,state,type,logo_path)
+     values({#{s.ltype_id},#{s.goodsName},#{s.introduce},#{s.price},#{s.newPrice},#{s.lnTime},#{s.newGoods},#{s.sale},#{s.goods_total},#{s.state},#{s.type},#{s.logo_path}});
+     </foreach>
+  end;
+  </insert>
+  
+  <!--  通过id删除 -->
+  <delete id="delete">
+    delete from goods where goods_id=#{goods_id}
+  </delete>
+
+  <!-- 批量删除 -->
+  <delete id="deleteMore">
+     delete from goods where goods_id in 
+     <foreach collection="array" open="(" close=")" separator="," item="id">
+        #{id}
+     </foreach>
+  </delete>
+  
+  <!-- 修改 -->
+  <update id="update" parameterType="Goods">
+     update goods set 
+     ltype_id=#{ltype_id},
+     goodsName=#{goodsName},
+     introduce=#{introduce},
+     price=#{price},
+     newPrice=#{newPrice},
+     lnTime=#{lnTime},
+     newGoods=#{newGoods},
+     sale=#{sale},
+     goods_total=#{goods_total},
+     state=#{state},
+     type=#{type},
+     logo_path=#{logo_path}
+     where goods_id=#{goods_id}
+  </update>
+  
+  <!-- 通过id查询  -->
+  <select id="queryById" parameterType="int" resultType="Goods">
+     select * from goods where goods_id=#{goods_id}
+  </select>
+  
+  <!-- 分页查询 -->
+  <select id="queryByPage" parameterType="map" resultMap="goodsLittle">
+        select * from goods,little_type,type where goods.ltype_id=little_type.ltype_id and goods.type=type.id and 1=1 
+	    <if test="qGoodsId!=null and qGoodsId!=''">
+	      and goods_id=#{qGoodsId}
+	    </if>
+	    <if test="qGoodsName!=null and qGoodsName!=''">
+	      and goodsName=#{qGoodsName}
+	    </if>
+    limit #{currentPage},#{pageSize}
+  </select>
+   <!-- 查询全部 -->
+  <select id="queryAll" parameterType="map" resultType="Goods">
+        select * from goods
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="getTotals" parameterType="map" resultType="int">
+    select count(*) from  goods where 1=1 
+    <if test="qGoodsId!=null and qGoodsId!=''">
+      and goods_id=#{qGoodsId}
+    </if>
+    <if test="qGoodsName!=null and qGoodsName!=''">
+      and goodsName=#{qGoodsName}
+    </if>
+  </select>
+  
+  <!-- 条件查询 -->
+  <select id="queryByCondition" parameterType="map" resultType="Goods">
+        select * from goods where  1=1 
+	    <if test="goodsName!=null and goodsName!=''">
+	      and goodsName like '%'||#{goodsName}||'%'
+	    </if>
+	    <if test="price!=null and price!=''">
+	      and price=#{price}
+	    </if>
+	    limit #{sp},#{pageSize}
+  </select>
+  
+  <!-- 条件类型查询 -->
+  <select id="queryByType" parameterType="int" resultType="Goods">
+        select * from goods where  type=#{type}
+  </select>
+  
+  <!-- 查询总记录数 --> 
+  <select id="queryTotals" parameterType="map" resultType="int">
+    select count(*) from  goods where 1=1 
+    <if test="goodsName!=null and goodsName!=''">
+      and goodsName=#{goodsName}
+    </if>
+    <if test="price!=null and price!=''">
+      and price=#{price}
+    </if>
+  </select>
+</mapper>
